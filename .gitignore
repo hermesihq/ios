@@ -8,3 +8,4 @@ DerivedData/
 Example/*.xcodeproj
 Example/Resources/Info.plist
 Example/Resources/*.entitlements
+Example/NotificationService/Info.plist
