@@ -76,8 +76,10 @@ curl -X POST http://localhost:8010/v1/events \
 - **A link the app did not allow** (`file://...`, `javascript:...`, `tel:...`) is dropped, not opened. The sample allows `http`,
   `https` and `sample`.
 - **Unregister**, then send again: nothing arrives. **Register** again: it does.
-- **Token change**: delete the app and install it again, allow notifications, register, and look at the subscriber in Hermesi:
-  one device, not two stale ones.
+- **Token change**: delete the app and install it again, allow notifications, register, and look at the subscriber in Hermesi.
+  A reinstall makes the app forget the old token, so it cannot retire it: expect **two** devices until the next send, when
+  the push service reports the old token as gone and Hermesi marks it `invalid` and stops sending to it. (This behaviour was
+  observed with the Android sample on a real device and Firebase; it has not been run on an iPhone.)
 
 ## If it does not work
 
