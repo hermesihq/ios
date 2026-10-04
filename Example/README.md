@@ -17,7 +17,7 @@ is how you check the part they cannot, with a real APNs key and a real notificat
    `true`, because a build you run from Xcode gets a development token, and Apple refuses it on the production host. See
    `docs/provider-setup.md` in Hermesi.
 3. **A Mac with Xcode 15 or later**, and an Apple Developer account for the signing team (push needs the capability).
-4. **A physical iPhone** is the reliable way. The simulator can receive push on a Mac with Apple silicon or a T2 chip.
+4. For pictures, the extension needs the same signing team as the app (Xcode asks for it per target). **A physical iPhone** is the reliable way. The simulator can receive push on a Mac with Apple silicon or a T2 chip.
 5. **Node 18 or later** for the token server, and `xcodegen` (`brew install xcodegen`).
 
 ## Run it
@@ -70,6 +70,9 @@ curl -X POST http://localhost:8010/v1/events \
 
 - **App in the background**: iOS draws the notification. Tap it: the app opens and the log says which link it was asked to open.
 - **App open**: iOS draws nothing by itself, and `HermesiNotificationDelegate` shows a banner. Tap it: same.
+- **A picture**: give the template's push tab an image URL (`https`, JPEG, PNG or GIF). The notification shows it, thanks to
+  the `NotificationService` extension in this project (`Example/NotificationService`). Point it at a URL that does not exist,
+  or at a `.webp`: the notification still arrives, as text.
 - **A link the app did not allow** (`file://...`, `javascript:...`, `tel:...`) is dropped, not opened. The sample allows `http`,
   `https` and `sample`.
 - **Unregister**, then send again: nothing arrives. **Register** again: it does.

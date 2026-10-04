@@ -8,6 +8,7 @@ registered with Hermesi as it changes.
 - Works with **both roads**: an APNs token (your app talks to Apple directly) or a Firebase token. Hermesi sends a
   device through the provider that speaks its transport, and the SDK sets it from the kind of token you pass.
 - Shows notifications that arrive while the app is open, and opens a tapped notification's link safely.
+- Attaches a notification's picture, through a notification service extension the package provides.
 - No dependencies, no method swizzling, no Firebase version of its own.
 
 iOS 13 and later. Swift concurrency (`async`/`await`).
@@ -127,11 +128,32 @@ the provider that can reach the device, and an app that overrode it would send i
 - `URLError`: Hermesi could not be reached.
 - Both are thrown from `register`, `tokenDidChange` and `unregister`.
 
+## Pictures
+
+APNs has no image field: a picture reaches the screen only through a **notification service extension**, a separate target
+of your app that iOS runs for a notification marked `mutable-content` (Hermesi sets it when a notification has a picture) before
+showing it. The package ships what goes in it, as its own product, `HermesiNotificationService`:
+
+1. In Xcode, **File > New > Target > Notification Service Extension**.
+2. Make the package's **HermesiNotificationService** product a dependency of that target, and of that target only. It
+   must not link `HermesiPush`: an extension may not use the app-side code.
+3. Replace the template class with:
+
+```swift
+import HermesiNotificationService
+
+final class NotificationService: HermesiNotificationServiceExtension {}
+```
+
+It reads the picture's URL from the payload (`image_url`, which Hermesi sets when it sends through APNs, or Firebase's
+`fcm_options.image`), downloads it, and attaches it. It is deliberately strict, because the URL comes from a template and is
+fetched on the person's device: **`https` only**, JPEG, PNG or GIF only (the formats iOS attaches), at most 5 MB, and
+abandoned after 20 seconds. Anything else, or any failure, or iOS running out of the extension's time, delivers the
+notification as text, without the picture. The example app in `Example/` has the extension wired up.
+
 ## What it does not do
 
-It does not show notification images: APNs has no image field, and the picture reaches the screen only through a
-notification service extension in your app, which reads the `image_url` Hermesi puts in the payload. It does not draw
-an inbox, and it does not cover Android (see [hermesihq/android](https://github.com/hermesihq/android)).
+It does not draw an inbox, and it does not cover Android (see [hermesihq/android](https://github.com/hermesihq/android)).
 
 ## Building
 

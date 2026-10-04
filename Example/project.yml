@@ -15,6 +15,9 @@ targets:
     sources: [Sources]
     dependencies:
       - package: HermesiPush
+        product: HermesiPush
+      # Embeds the extension in the app. Without it iOS never runs the code that attaches a notification's picture.
+      - target: NotificationService
     entitlements:
       path: Resources/Example.entitlements
       properties:
@@ -39,4 +42,26 @@ targets:
         SWIFT_VERSION: "5.0"
         CODE_SIGN_STYLE: Automatic
         # Set your team in Xcode (Signing & Capabilities), or pass DEVELOPMENT_TEAM=... to xcodebuild.
+        DEVELOPMENT_TEAM: ""
+  # Attaches the picture a notification asks for. A separate target, because iOS runs it in its own process before the
+  # notification is shown, and it links only the product that is safe for an extension.
+  NotificationService:
+    type: app-extension
+    platform: iOS
+    sources: [NotificationService]
+    dependencies:
+      - package: HermesiPush
+        product: HermesiNotificationService
+    info:
+      path: NotificationService/Info.plist
+      properties:
+        CFBundleDisplayName: NotificationService
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.usernotifications.service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.hermesihq.push.example.NotificationService
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: ""
