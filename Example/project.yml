@@ -1,0 +1,42 @@
+# Generate the Xcode project with `xcodegen` (brew install xcodegen), then open HermesiPushExample.xcodeproj.
+# The project is generated, not committed: a hand-edited .xcodeproj is a merge conflict waiting to happen.
+name: HermesiPushExample
+options:
+  bundleIdPrefix: io.github.hermesihq
+  deploymentTarget:
+    iOS: "15.0"
+packages:
+  HermesiPush:
+    path: ..
+targets:
+  Example:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    dependencies:
+      - package: HermesiPush
+    entitlements:
+      path: Resources/Example.entitlements
+      properties:
+        # `development` for builds you run from Xcode; Xcode switches it to `production` when it archives for TestFlight
+        # or the App Store. Hermesi's APNs provider has a matching "Use sandbox" setting.
+        aps-environment: development
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Hermesi Push sample
+        UILaunchScreen: {}
+        UIBackgroundModes: [remote-notification]
+        # The sample talks to Hermesi and its token server over http on your machine or network.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        # The deep link the sample's notifications can carry: sample://orders/4821
+        CFBundleURLTypes:
+          - CFBundleURLSchemes: [sample]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.hermesihq.push.example
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_STYLE: Automatic
+        # Set your team in Xcode (Signing & Capabilities), or pass DEVELOPMENT_TEAM=... to xcodebuild.
+        DEVELOPMENT_TEAM: ""

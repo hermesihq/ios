@@ -5,3 +5,6 @@ xcuserdata/
 DerivedData/
 .DS_Store
 *.log
+Example/*.xcodeproj
+Example/Resources/Info.plist
+Example/Resources/*.entitlements
