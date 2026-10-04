@@ -27,7 +27,7 @@ Swift Package Manager: in Xcode, **File > Add Package Dependencies** and enter
 `https://github.com/hermesihq/ios`, or in `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/hermesihq/ios", from: "0.1.0")
+.package(url: "https://github.com/hermesihq/ios", from: "0.2.0")
 ```
 
 ## Set up

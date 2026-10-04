@@ -6,7 +6,7 @@ import Foundation
 /// after anything the app adds: an app that overrode it would send its devices to a provider that cannot reach them.
 /// The same goes for `platform`.
 enum DeviceMetadata {
-    static let sdkVersion = "0.1.0"
+    static let sdkVersion = "0.2.0"
 
     static func build(transport: String, osVersion: String, appVersion: String?, extra: [String: Any]) -> [String: Any] {
         var metadata: [String: Any] = [
