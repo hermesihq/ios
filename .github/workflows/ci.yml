@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # The package's core is plain Foundation, so everything that does not need UIKit is tested on Linux.
+  linux:
+    runs-on: ubuntu-latest
+    container: swift:6.0
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift test
+
+  # The part that needs UIKit and UserNotifications can only be compiled by Apple's toolchain. `swift test` on the
+  # macOS host covers the decisions the notification delegate makes; the iOS builds compile the delegate and
+  # `requestAuthorization` themselves, for a device and for the simulator.
+  apple:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: swift --version && xcodebuild -version
+      - run: swift test
+      - run: xcodebuild build -scheme HermesiPush -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO
+      - run: xcodebuild build -scheme HermesiPush -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO
